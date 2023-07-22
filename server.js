@@ -19,8 +19,8 @@ app.use("/auth", require("./src/routes/authRoutes"));   //public routes require 
 app.use("/main", require("./src/routes/mainCategory"));
 app.use("/sub", require("./src/routes/subCategory"));
 app.use("/article", require("./src/routes/articleRoutes"));
-// app.use("/", require("./routes/columnRoutes"));
-// app.use("/", require("./routes/projectRoutes"));
+app.use("/sidebar", require("./src/routes/sideBarRoutes"));
+
 app.use(errorHandler);              //defined last to catch errors
 
 

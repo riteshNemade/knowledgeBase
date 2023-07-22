@@ -6,6 +6,7 @@ ac.grant('viewer')
     .readAny('main')
     .readAny('sub')
     .readAny('article')
+    .readAny('infoPage')
 
 //admin
 ac.grant('editor')
@@ -19,6 +20,9 @@ ac.grant('editor')
     .createAny('article')               //article permission
     .deleteAny('article')
     .updateAny('article')
+    .createAny('infoPage')               //infoPage permission
+    .deleteAny('infoPage')
+    .updateAny('infoPage')
 
 //super
 ac.grant('super')

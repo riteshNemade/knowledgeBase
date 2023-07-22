@@ -1,19 +1,34 @@
 const mongoose = require('mongoose');
-const { nanoid } = require('nanoid');
 
 const commentSchema = new mongoose.Schema({
-  _id: {
-    type: String,
-    default: () => nanoid(),
+  createdBy:{
+    type: Number,
+    required: true,
   },
   content: {
     type: String,
     required: true,
   },
-  article: {
+  parentId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Article',
   },
+  replies: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'replySchema'
+  }],
+  timestamp: {
+    type: Date,
+    default: Date.now,
+  },
+  likes: {
+    type: Number,
+    default:0
+  },
+  dislikes: {
+    type:Number,
+    default:0
+  }
 });
 
 const Comment = mongoose.model('Comment', commentSchema);

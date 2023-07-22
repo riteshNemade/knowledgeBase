@@ -24,6 +24,7 @@ async function createService(body, user_id) {
     
     const newArticle = new Article({ 
         articleName,
+        createdBy: user_id
       });
   
     await newArticle.save();
