@@ -10,8 +10,8 @@ const articleSchema = new mongoose.Schema({
     required: true,
   },
   content: {
-    type: String,
-    required: false,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Content',
   },
   parentId:{
     type: mongoose.Schema.Types.ObjectId,
@@ -46,6 +46,9 @@ const articleSchema = new mongoose.Schema({
         type: Boolean,
         required: true,
         default: false,
+      },
+      sequence: {
+        type:Number
       }
     },
   ],
