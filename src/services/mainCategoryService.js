@@ -5,13 +5,20 @@ const sendEmail = require('../utils/sendEmail');
 
 async function getService() {
     let result = await db
-        .select('id', 'categoryName')
+        .select('id', 'categoryName','description','image_name')
         .from('main_categories')
         .catch(() => {
             throw new customError('No Articles Found.', 404);
         });
-    
-    return { "data": result };
+        
+        const updatedResult = result.map(item => {
+            return {
+              ...item,
+              image_name: `/main/${item.image_name}`
+            };
+          });
+          
+    return { "data": updatedResult };
 
 }
 
