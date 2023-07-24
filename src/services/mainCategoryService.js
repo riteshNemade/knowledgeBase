@@ -18,11 +18,13 @@ async function getService() {
 
 async function createService(body, user_id) {
     const timestamp = new Date;
-    let {categoryName}=body;
-
+    let {categoryName,description,image_name}=body;
+    
     let data;
     await db('main_categories').insert({
         categoryName,
+        description,
+        image_name,
         creatorId: user_id,
         created_at: timestamp
     }).then(async (row) => {
@@ -41,6 +43,8 @@ async function patchService(body) {
     let updated_at = new Date;
     let updateObject = {
         ...(body.categoryName && { categoryName: body.categoryName }),
+        ...(body.image_name && { image_name: body.image_name }),
+        ...(body.description && { description: body.description }),
         ...({ updated_at: updated_at })
     };
     await db('main_categories')
