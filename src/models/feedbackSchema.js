@@ -5,9 +5,9 @@ const feedbackSchema = new mongoose.Schema({
       type: Number,
       required: true,
     },
-    comment: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Comment',
+    feedback: {
+      type: String,
+      required:true,
     },
     timestamp: {
       type: Date,

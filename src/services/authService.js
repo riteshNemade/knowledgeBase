@@ -69,6 +69,7 @@ async function signIn(body) {
         return {
             "name": user.username,
             "email": user.email,
+            "role" : user.role,
             "token": accessToken
         }
     } else {

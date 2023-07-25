@@ -1,33 +1,29 @@
 const mongoose = require('mongoose');
 
 const articleSchema = new mongoose.Schema({
-  Views:{
+  Views: {
     type: Number,
-    default:0
+    default: 0
   },
   articleName: {
     type: String,
     required: true,
   },
-  content: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Content',
-  },
-  parentId:{
+  parentId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Article',
     default: null
   },
-  hasChild:{
+  hasChild: {
     type: Boolean,
     required: true,
     default: false
   },
-  createdBy:{
+  createdBy: {
     type: Number,
     required: true,
   },
-  allowedUsers:[
+  allowedUsers: [
     {
       type: Number
     }
@@ -48,21 +44,13 @@ const articleSchema = new mongoose.Schema({
         default: false,
       },
       sequence: {
-        type:Number
+        type: Number
       }
     },
   ],
-  likes: {
-    type: Number,
-    default: 0,
-  },
-  dislikes: {
-    type: Number,
-    default: 0,
-  },
-  Views:{
-    type: Number,
-    default:0
+  Comments:{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Comment'
   },
 });
 

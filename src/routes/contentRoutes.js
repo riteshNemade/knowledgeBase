@@ -1,21 +1,22 @@
 const express = require('express');
 const {
-    getInfoPage,
-    createInfoPage,
-    deleteInfoPage,
-    patchInfoPage
-}= require('../controllers/sideBarController');
+    getContent,
+    createContent,
+    patchContent,
+    deleteContent
+
+}= require('../controllers/contentController');
 
 
 const { authorize, allowIfLoggedin } = require('../middlewares/authHandler');
 const router = express.Router();
 
-router.route("/").get(allowIfLoggedin, authorize('readAny', 'infoPage'), getInfoPage);
+router.route("/").get(allowIfLoggedin, authorize('readAny', 'infoPage'), getContent);
 router
     .route("/")
-    .post(allowIfLoggedin, authorize('createAny', 'infoPage'), createInfoPage)
-    .delete(allowIfLoggedin, authorize('deleteAny', 'infoPage'), deleteInfoPage)
-    .patch(allowIfLoggedin, authorize('updateAny', 'infoPage'), patchInfoPage);
+    .post(allowIfLoggedin, authorize('createAny', 'infoPage'), createContent)
+    .delete(allowIfLoggedin, authorize('deleteAny', 'infoPage'), deleteContent)
+    .patch(allowIfLoggedin, authorize('updateAny', 'infoPage'), patchContent);
 
 
 

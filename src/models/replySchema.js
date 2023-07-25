@@ -5,7 +5,7 @@ const replySchema = new mongoose.Schema({
       type: Number,
       required: true,
     },
-    content: {
+    reply: {
       type: String,
       required: true,
     },

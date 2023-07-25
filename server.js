@@ -16,11 +16,14 @@ app.get("/", (req, res) => {
   res.json({ message: "Welcome to Knowledge Base." });
 });
 app.use(express.static(path.join(__dirname, 'src', 'public')));
-app.use("/auth", require("./src/routes/authRoutes"));   //public routes require no authentication.
+
+app.use("/auth", require("./src/routes/authRoutes"));   
 app.use("/main", require("./src/routes/mainCategory"));
 app.use("/sub", require("./src/routes/subCategory"));
 app.use("/article", require("./src/routes/articleRoutes"));
 app.use("/sidebar", require("./src/routes/sideBarRoutes"));
+app.use("/content", require("./src/routes/contentRoutes"));
+app.use("/comment", require("./src/routes/commentRoutes"));
 
 app.use(errorHandler);              //defined last to catch errors
 

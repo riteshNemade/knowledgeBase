@@ -29,7 +29,6 @@ async function createService(body, user_id) {
   
     await newArticle.save();
     let articleId=newArticle._id.toString();
-    console.log(articleId)
     await db('article_relations').insert({
         articleId,
         articleName,

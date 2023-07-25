@@ -5,18 +5,14 @@ const commentSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  content: {
+  comment: {
     type: String,
     required: true,
   },
   parentId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Article',
+    ref: 'Content',
   },
-  replies: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'replySchema'
-  }],
   timestamp: {
     type: Date,
     default: Date.now,
