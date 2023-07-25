@@ -8,7 +8,12 @@ const contentSchema = new mongoose.Schema({
   content: {
     type: String,
     required: true,
+    default: ' '
   },
+  cloneId:{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Clone'
+  }
 });
 
 const Content = mongoose.model('Content', contentSchema);

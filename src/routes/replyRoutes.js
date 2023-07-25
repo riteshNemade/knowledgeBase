@@ -8,15 +8,15 @@ const {
 }= require('../controllers/replyController');
 
 
-const { authorize, allowIfLoggedin } = require('../middlewares/authHandler');
+const { allowIfLoggedin } = require('../middlewares/authHandler');
 const router = express.Router();
 
-router.route("/").get(allowIfLoggedin, authorize('readAny', 'infoPage'), getReplies);
+router.route("/").get(allowIfLoggedin, getReplies);
 router
     .route("/")
-    .post(allowIfLoggedin, authorize('createAny', 'infoPage'), createReply)
-    .delete(allowIfLoggedin, authorize('deleteAny', 'infoPage'), deleteReply)
-    .patch(allowIfLoggedin, authorize('updateAny', 'infoPage'), patchReply);
+    .post(allowIfLoggedin, createReply)
+    .delete(allowIfLoggedin, deleteReply)
+    .patch(allowIfLoggedin, patchReply);
 
 
 

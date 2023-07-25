@@ -3,7 +3,7 @@ const customError = require('../utils/customError');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { resetToken, generateToken } = require('../utils/generateToken');
-const sendEmail = require('../utils/sendEmail')
+const sendEmail = require('../utils/sendEmail');
 require('dotenv').config();
 
 /**************************************Sign Up Service*************************************************/

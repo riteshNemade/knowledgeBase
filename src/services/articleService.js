@@ -1,6 +1,6 @@
 const {db} = require('../config/database');
 
-
+const Content = require('../models/contentSchema');
 const Article = require('../models/articleSchema');
 const customError= require('../utils/customError')
 
@@ -21,7 +21,7 @@ async function getService(parent_id) {
 async function createService(body, user_id) {
 
     let {articleName,parentId}=body;
-    
+    try{
     const newArticle = new Article({ 
         articleName,
         createdBy: user_id
@@ -29,6 +29,13 @@ async function createService(body, user_id) {
   
     await newArticle.save();
     let articleId=newArticle._id.toString();
+    
+    const newContent = new Content({
+        parentId:articleId,
+      });
+    await newContent.save();
+    contentInit(newContent._id.toString(),newContent);
+
     await db('article_relations').insert({
         articleId,
         articleName,
@@ -38,9 +45,11 @@ async function createService(body, user_id) {
         console.log(err)    
         throw new customError(err.message, 500);
         })
-    
-    
+
     return articleId;
+    }catch(err){
+        throw new customError(err.mssage,500)
+    }
 
 }
 

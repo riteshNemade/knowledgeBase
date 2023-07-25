@@ -34,7 +34,6 @@ async function createService(body, parentId) {
     });
 
     const savedContent = await newContent.save();
-    console.log(savedContent);
     await Article.findByIdAndUpdate(parentId,{content:savedContent._id.toString()})
     return { id: savedContent._id };
   } catch (err) {
@@ -49,14 +48,12 @@ async function patchService(body, contentId) {
       { content: body.content },
       { new: true }
     );
-
     if (!updatedContent) {
       throw new customError('Content not found', 404);
     }
     else {
       return { message: 'Updated Successfully' };
     }
-
 
   } catch (err) {
     throw new customError('Something went wrong', 500)

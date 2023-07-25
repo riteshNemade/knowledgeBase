@@ -37,16 +37,8 @@ const articleSchema = new mongoose.Schema({
       articleName: {
         type: String,
         required: true,
-      },
-      hasChild: {
-        type: Boolean,
-        required: true,
-        default: false,
-      },
-      sequence: {
-        type: Number
-      }
     },
+  }
   ],
   Comments:{
     type: mongoose.Schema.Types.ObjectId,
