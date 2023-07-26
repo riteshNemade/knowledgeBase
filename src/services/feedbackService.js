@@ -1,6 +1,6 @@
 const { mongoose } = require('../config/database');
 
-const feedback = require('../models/feedBackSchema');
+const feedback = require('../models/feedbackSchema');
 const customError = require('../utils/customError')
 
 async function getService(parentId) {
