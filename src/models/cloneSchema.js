@@ -12,6 +12,6 @@ const cloneSchema = new mongoose.Schema({
   },
 });
 
-const Clone = mongoose.model('Clone', contentSchema);
+const Clone = mongoose.model('Clone', cloneSchema);
 
 module.exports = Clone;

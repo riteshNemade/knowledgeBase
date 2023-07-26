@@ -1,8 +1,10 @@
 const {db} = require('../config/database');
 
+const Clone=require('../models/cloneSchema')
 const Content = require('../models/contentSchema');
 const Article = require('../models/articleSchema');
-const customError= require('../utils/customError')
+const customError= require('../utils/customError');
+const contentInit=require('../utils/contentInit')
 
 async function getService(parent_id) {
     let result = await db
@@ -34,7 +36,17 @@ async function createService(body, user_id) {
         parentId:articleId,
       });
     await newContent.save();
-    contentInit(newContent._id.toString(),newContent);
+
+    let cloneId=newContent._id.toString();
+    const newClone = new Clone({
+        parentId:cloneId,
+    });
+    await newClone.save();  
+    
+    console.log(articleId,cloneId,newClone._id.toString());
+
+
+    contentInit(newContent._id.toString(),newContent.toString());
 
     await db('article_relations').insert({
         articleId,
@@ -48,6 +60,7 @@ async function createService(body, user_id) {
 
     return articleId;
     }catch(err){
+        console.log(err)
         throw new customError(err.mssage,500)
     }
 
