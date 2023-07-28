@@ -5,12 +5,13 @@ const {
     getService,
     createService,
     patchService,
-    deleteService
+    deleteService,
+    child
 } = require('../services/sideBarService');
 
 
 const getChildArticles = asyncHandler(async function (req,res){                     //cRud. THIS IS FOR SIDEBAR
-    res.status(201).json(await getService(req.body.articleId))
+    res.status(201).json(await getService(req.params.articleId))
 })
 
 const createChildArticle = asyncHandler(async function (req,res){       
@@ -33,5 +34,10 @@ const deleteChildArticle = asyncHandler(async function (req,res){
     res.status(500).json({message:"Something went wrong"});
 })
 
+const getChildren=asyncHandler(async function (req,res){
+    const result=await child(req.params.articleId);
+    res.status(200).json({data:result})
+})
 
-module.exports = { getChildArticles, createChildArticle, patchChildArticle, deleteChildArticle }
+
+module.exports = { getChildArticles, createChildArticle, patchChildArticle, deleteChildArticle,getChildren }

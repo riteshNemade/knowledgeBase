@@ -2,40 +2,76 @@ const Article = require('../models/articleSchema');
 const Content = require('../models/contentSchema');
 const contentInit = require('../utils/contentInit');
 const customError = require('../utils/customError');
+const { db } = require('../config/database')
 
 async function getService(articleId) {
-    const childArticles =                                            //this will return childArticles array
-        await Article
-            .findOne({ _id: articleId }, 'childArticles')
-            .catch((err) => {
-                throw new customError(err.message, 500);
-            });
-    return childArticles;
+    try {
+        const temp = await Article.findById(articleId);
+        const content = await Content.findOne({ parentId: articleId })
+        if (temp.hasChild)
+            return {
+                parentId: temp._id,
+                parentName: temp.articleName,
+                createdBy: temp.createdBy,
+                contentId: content._id,
+                childArticles: temp.childArticles,
+                allowedUsers: temp.allowedUsers
+            };
+        else
+            return [];
+    } catch (err) {
+        console.log(err);
+    }
 
 }
 
 async function createService(body, user_id) {
 
     let { articleName, parentId } = body;
+    let allow = [];
+    const temp = await Article.findById(parentId);
+    console.log(temp)
+    allow.push(temp.createdBy);
+    const sqlList = await db('article_editors').select('user_id').where('articleId', parentId);
+    const newEditorIds = sqlList.map(entry => entry.user_id);
 
+    const uniqueEditors = new Set(allow.concat(newEditorIds));
+
+    // Convert back to array format
+    allow = Array.from(uniqueEditors);
+    const allowedUsers = allow.concat(sqlList.user_id);
+    console.log(allowedUsers);
+    let flag=false;
+    for(let i=0;i<allowedUsers.length;i++){
+        if(user_id===allowedUsers[i])
+        {
+            flag=true;
+            break;
+        }
+    }
+    if(flag){
     const newArticle = new Article({
         articleName,
         createdBy: user_id,
         parentId
     })
     await newArticle.save();
-    let articleId=newArticle._id.toString();
+    let articleId = newArticle._id.toString();
 
     const newContent = new Content({
-        parentId:articleId,
-      });
+        parentId: articleId,
+    });
     await newContent.save();
-    contentInit(newContent._id.toString(),newContent.toString());
+
+
+
+    contentInit(newContent._id.toString(), newContent.toString());
+
     let childArticle = {
         _id: newArticle._id,
-        articleName: newArticle.articleName
+        articleName: newArticle.articleName,
     }
-        
+
     const updatedArticle = await Article.findByIdAndUpdate(
         parentId,
         {
@@ -45,16 +81,33 @@ async function createService(body, user_id) {
         { new: true }
     );
 
-    if (updatedArticle)
-        return newArticle._id.toString();
-    else
-        return false;
+    let grandId = updatedArticle.parentId;
+    console.log(grandId)
+    if (grandId) {
+        const grandArticle = await Article.findOne({ _id: grandId });
+        const childArticles = grandArticle.childArticles;
+        console.log(childArticles)
+        const childArticleToUpdate = childArticles.find(child => child._id == updatedArticle._id.toString());
+        console.log(childArticleToUpdate)
+        childArticleToUpdate.hasChild = true;
+        await grandArticle.save();
+    }
+
+    let result = {};
+
+    result.articleId = newArticle._id.toString();
+    result.contentId = newContent._id.toString();
+    return result;
+}else{
+    throw new customError('Unauthorized access',401)
+}
+
 }
 
 async function patchService(body) {
     try {
         let articleName = body.articleName;
-        const updateArticle=await Article.findByIdAndUpdate(
+        const updateArticle = await Article.findByIdAndUpdate(
             body.articleId,
             { $set: { articleName: articleName } },
             { new: true }
@@ -67,7 +120,7 @@ async function patchService(body) {
                 { new: true }
             );
         }
-        
+
         return true;
     }
     catch (err) {
@@ -77,18 +130,31 @@ async function patchService(body) {
 
 async function deleteService(articleId) {
 
-        const article = await Article.findById(articleId);
-        if (!article) {
-            return false;
-        }
-        if(article.hasChild)
-            throw new customError('Article has child articles. Delete them first.',400);
-        else{        
-            await Article.findByIdAndDelete(articleId);
-            return true;     
-        }                                           
-    
+    const article = await Article.findById(articleId);
+    if (!article) {
+        return false;
+    }
+    if (article.hasChild)
+        throw new customError('Article has child articles. Delete them first.', 400);
+    else {
+        await Article.findByIdAndDelete(articleId);
+        return true;
+    }
+}
+async function child(articleId) {
+    try {
+        const temp = await Article.findById(articleId);
+        if (temp.hasChild)
+            return temp.childArticles;
+        else
+            return [];
+    } catch (err) {
+        console.log(err);
+    }
+}
 
+async function getEditors(articleId,user_id){
+    const temp=await db('article_editors').select('')
 }
 
 
@@ -96,5 +162,6 @@ module.exports = {
     createService,
     getService,
     patchService,
-    deleteService
+    deleteService,
+    child
 }

@@ -1,10 +1,6 @@
 const mongoose = require('mongoose');
 
 const articleSchema = new mongoose.Schema({
-  Views: {
-    type: Number,
-    default: 0
-  },
   articleName: {
     type: String,
     required: true,
@@ -23,11 +19,6 @@ const articleSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  allowedUsers: [
-    {
-      type: Number
-    }
-  ],
   childArticles: [
     {
       _id: {
@@ -38,12 +29,12 @@ const articleSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+      hasChild:{
+        type: Boolean,
+        default: false
+      }
   }
-  ],
-  Comments:{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Comment'
-  },
+  ]
 });
 
 const Article = mongoose.model('Article', articleSchema);

@@ -11,7 +11,7 @@ const {
 const { authorize, allowIfLoggedin } = require('../middlewares/authHandler');
 const router = express.Router();
 
-router.route("/").get(allowIfLoggedin, authorize('readAny', 'infoPage'), getComments);
+router.route("/:parentId").get(allowIfLoggedin, authorize('readAny', 'infoPage'), getComments);
 router
     .route("/")
     .post(allowIfLoggedin, authorize('createAny', 'infoPage'), createComment)

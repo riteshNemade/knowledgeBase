@@ -32,4 +32,21 @@ function allowIfLoggedin (req, res, next) {
     }
   }
 
+  const authorizeContent = (action,resource) => {
+    return asyncHandler(async (req, res, next) => {
+        
+        const permission = ac.can(req.user.role)[action](resource);
+        
+        if (permission.granted)
+            next(); 
+        else
+            throw new customError('Unauthorized Access', 401);
+
+    })
+};
+
+
+
+
+
 module.exports = {authorize,allowIfLoggedin};

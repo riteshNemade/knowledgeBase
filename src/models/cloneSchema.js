@@ -6,11 +6,11 @@ const cloneSchema = new mongoose.Schema({
    ref: 'Content' 
   },
   content: {
-    type: String,
-    required: true,
-    default: ' '
+    type: Object
   },
 });
+
+
 
 const Clone = mongoose.model('Clone', cloneSchema);
 

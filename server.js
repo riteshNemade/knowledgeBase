@@ -6,8 +6,8 @@ const errorHandler = require('./src/middlewares/errorHandler');
 const cors=require('cors');
 const validateToken = require('./src/middlewares/tokenHandler');
 const path = require('path');
-const Clone=require('./src/models/cloneSchema')
-
+const Clone=require('./src/models/cloneSchema');
+const Content=require('./src/models/contentSchema')
 
 require('dotenv').config();
 const port = process.env.PORT || 6000;
@@ -29,27 +29,44 @@ const io = new Server(httpServer, {
   },
 });
 
-io.on("connection", (socket) => {
-  console.log("Socket conntection established");
-  console.log(socket.id);
+io.on('connection', (socket) => {
+  // console.log('User connected');
 
-  socket.on('content', (data) => {
-    // Create a new Clone document with the received content and socket ID
-    const newClone = new Clone({
-      parentId: data.id, // Assuming data.id contains the parent ID received from the frontend
-      content: data.content,
-    });
+  // Join a room to synchronize changes
+  socket.on('joinRoom', async (roomId) => {
+    socket.join(roomId);
+    console.log(roomId)
 
-    // Save the newClone document to the database
-    newClone.save((err, savedClone) => {
-      if (err) {
-        console.error('Error saving Clone document:', err);
-      } else {
-        console.log('Clone document saved:', savedClone);
+    try {
+      // Fetch the document content from the database
+      const document = await Clone.findById(roomId);
+      console.log(roomId)
+      if (document && document.content) {
+        socket.emit('documentContent', document.content.ops);
+        
       }
-    });
+    } catch (err) {
+      console.error('Error fetching document content:', err);
+    }
+});
+
+  // Handle document updates
+  socket.on('updateDocument',async (data) => {
+    
+    const { roomId, content } = data;
+   
+    const updatedObject = await Clone.findByIdAndUpdate(roomId, { content }, { upsert: true });
+
+    
+    socket.to(roomId).emit('documentUpdated', content);
+  });
+
+  // Handle disconnection
+  socket.on('disconnect', () => {
+    // console.log('User disconnected');
   });
 });
+
 
 
 
@@ -62,11 +79,31 @@ app.use("/sidebar", require("./src/routes/sideBarRoutes"));
 app.use("/content", require("./src/routes/contentRoutes"));
 app.use("/comment", require("./src/routes/commentRoutes"));
 app.use("/feedback", require("./src/routes/feedbackRoutes"));
-app.use("/reply", require("./src/routes/replyRoutes"));
+app.use("/clone", require("./src/routes/cloneRoutes"));
 
 app.use(errorHandler);              //defined last to catch errors
 
+//search
+async function performTextSearch(searchQuery) {
+  try {
+    const results = await Content.find({ $text: { $search: searchQuery } });
+    return results;
+  } catch (err) {
+    console.error('Error performing text search:', err);
+    throw err;
+  }
+}
 
+// Example usage
+const searchTerm = '';
+performTextSearch(searchTerm)
+  .then((results) => {
+    console.log('Search results:', results);
+  })
+  .catch((err) => {
+    console.error('Error:', err);
+  });
+//
 
 
 

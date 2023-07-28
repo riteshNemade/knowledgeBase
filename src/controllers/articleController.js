@@ -9,7 +9,7 @@ const {
 } = require('../services/articleService');
 
 const getArticle = asyncHandler(async function (req,res){
-    res.status(201).json(await getService(req.body.parentId));
+    res.status(201).json(await getService(req.params.parentId));
 })
 
 const createArticle = asyncHandler(async function (req, res) {
@@ -25,7 +25,8 @@ const createArticle = asyncHandler(async function (req, res) {
             success: true,
             message: "Created successfully",
             data:[{
-                "id":result
+                "articleId":result.articleId,
+                "contentId":result.contentId
             }]
         });
     }

@@ -42,8 +42,6 @@ async function createService(body, user_id) {
         parentId:cloneId,
     });
     await newClone.save();  
-    
-    console.log(articleId,cloneId,newClone._id.toString());
 
 
     contentInit(newContent._id.toString(),newContent.toString());
@@ -57,8 +55,10 @@ async function createService(body, user_id) {
         console.log(err)    
         throw new customError(err.message, 500);
         })
-
-    return articleId;
+    let result={};
+    result.articleId=articleId;
+    result.contentId=newContent._id.toString();
+    return result;
     }catch(err){
         console.log(err)
         throw new customError(err.mssage,500)
@@ -98,6 +98,14 @@ async function deleteService(body) {
         });
 
     return result;
+}
+
+async function inviteUsers(body){
+    const user_id=await db('users').select('user_id').where('email',body.email);
+    await db('article_editors').insert({
+        articleId:body.articleId,
+        user_id:user_id
+    })
 }
 
 

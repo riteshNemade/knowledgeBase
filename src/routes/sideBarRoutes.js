@@ -1,13 +1,14 @@
 const express = require('express');
 const {
-    getChildArticles, createChildArticle, deleteChildArticle, patchChildArticle
+    getChildArticles, createChildArticle, deleteChildArticle, patchChildArticle, getChildren
 }= require('../controllers/sideBarController');
 
 
 const { authorize, allowIfLoggedin } = require('../middlewares/authHandler');
 const router = express.Router();
 
-router.route("/").get(allowIfLoggedin, authorize('readAny', 'infoPage'), getChildArticles);
+router.route("/:articleId").get(allowIfLoggedin, authorize('readAny', 'infoPage'), getChildArticles);
+router.route("/child/:articleId").get(allowIfLoggedin, authorize('readAny', 'infoPage'), getChildren);
 router
     .route("/")
     .post(allowIfLoggedin, authorize('createAny', 'infoPage'), createChildArticle)

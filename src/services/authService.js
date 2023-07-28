@@ -68,6 +68,7 @@ async function signIn(body) {
         const accessToken = generateToken(user);
         return {
             "name": user.username,
+            "user_id":user.user_id,
             "email": user.email,
             "role" : user.role,
             "token": accessToken

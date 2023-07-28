@@ -3,7 +3,10 @@ const { mongoose } = require('../config/database');
 const Content = require('../models/contentSchema');
 
 const Article = require('../models/articleSchema');
-const customError = require('../utils/customError')
+const customError = require('../utils/customError');
+const contentCommit = require('../utils/contentCommit');
+const contentHistory = require('../utils/contentHistory');
+const prevContent = require('../utils/prevContent');
 
 async function getService(parentId) {
   try {
@@ -28,34 +31,38 @@ async function getService(parentId) {
 
 async function createService(body, parentId) {
   try {
-    const newContent = new Content({
-      content: body.content,
-      parentId,
-    });
+    // Find the existing content associated with the parentId
+    const existingContent = await Content.findOne({ parentId: parentId });
 
-    const savedContent = await newContent.save();
-    await Article.findByIdAndUpdate(parentId,{content:savedContent._id.toString()})
+    // Update the content with the provided body.content
+    existingContent.content = body.content;
+    const savedContent = await existingContent.save();
+    
+
     return { id: savedContent._id };
   } catch (err) {
-    throw new customError(err.message, 500)
+    throw new customError(err.message, 500);
   }
 }
 
 async function patchService(body, contentId) {
   try {
+
     const updatedContent = await Content.findByIdAndUpdate(
       contentId,
-      { content: body.content },
+      { content: body.content,text: body.text},
       { new: true }
     );
     if (!updatedContent) {
       throw new customError('Content not found', 404);
     }
     else {
+      contentCommit(contentId,body.content);
       return { message: 'Updated Successfully' };
     }
 
   } catch (err) {
+    console.log(err)
     throw new customError('Something went wrong', 500)
   }
 }
@@ -71,6 +78,15 @@ async function deleteService(contentId) {
   else {
     return true;
   }
+}
+
+async function getHistory(contentId){
+  const result= contentHistory(contentId);
+  return result;
+}
+async function getPrev(contentId,hash){
+  const result= prevContent(contentId,hash);
+  return result;
 }
 
 

@@ -11,7 +11,7 @@ const {
 
 
 const getFeedbacks = asyncHandler(async function (req,res){                           //CRUD   
-    res.status(201).json(await getService(req.body.parentId));
+    res.status(201).json(await getService(req.params.parentId));
 })
 const createFeedback = asyncHandler(async function (req,res){                           //CRUD   
     res.status(201).json(await createService(req.body,req.user.user_id));

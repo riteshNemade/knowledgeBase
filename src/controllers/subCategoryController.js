@@ -9,7 +9,7 @@ const {
 } = require('../services/subCategoryService');
 
 const getSubCategory = asyncHandler(async function (req,res){
-    res.status(200).json(await getService(req.body.parentId));
+    res.status(200).json(await getService(req.params.parentId));
 })
 
 const createSubCategory = asyncHandler(async function (req, res) {

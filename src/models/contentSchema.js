@@ -6,15 +6,21 @@ const contentSchema = new mongoose.Schema({
    ref: 'Article' 
   },
   content: {
-    type: String,
-    required: true,
-    default: ' '
+    type: Object,
   },
   cloneId:{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Clone'
+  },
+  text:{
+    type:String,
   }
 });
+
+contentSchema.index({ text: 'text' });
+
+
+
 
 const Content = mongoose.model('Content', contentSchema);
 

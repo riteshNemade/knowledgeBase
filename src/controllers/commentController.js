@@ -11,16 +11,16 @@ const {
 
 
 const getComments = asyncHandler(async function (req,res){                           //CRUD   
-    res.status(201).json(await getService(req.body.parentId));
+    res.status(201).json(await getService(req.params.parentId));
 })
 const createComment = asyncHandler(async function (req,res){                           //CRUD   
-    res.status(201).json(await createService(req.body,req.body.parentId));
+    res.status(201).json(await createService(req.body,req.user.user_id));
 })
 const patchComment = asyncHandler(async function (req,res){                           //CRUD   
     res.status(201).json(await patchService(req.body,req.body.commentId));
 })
 const deleteComment = asyncHandler(async function (req,res){ 
-    const flag=await deleteService(req.body,req.body.commentId)
+    const flag=await deleteService(req.body.commentId)
     if(flag===true)                          //CRUD   
         res.status(201).json({message:'Content Deleted.'});
     else
