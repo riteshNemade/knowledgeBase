@@ -80,6 +80,9 @@ app.use("/content", require("./src/routes/contentRoutes"));
 app.use("/comment", require("./src/routes/commentRoutes"));
 app.use("/feedback", require("./src/routes/feedbackRoutes"));
 app.use("/clone", require("./src/routes/cloneRoutes"));
+app.use("/subscribe", require("./src/routes/subscribeRoutes"));
+app.use("/merge", require("./src/routes/mergeEditRoutes"));
+app.use("/invite", require("./src/routes/editorRoutes"));
 
 app.use(errorHandler);              //defined last to catch errors
 

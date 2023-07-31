@@ -5,7 +5,8 @@ const {
     getService,
     createService,
     patchService,
-    deleteService
+    deleteService,
+    getArts
 } = require('../services/subCategoryService');
 
 const getSubCategory = asyncHandler(async function (req,res){
@@ -46,5 +47,8 @@ const deleteSubCategory = asyncHandler(async function (req, res) {
         data: null
     });
 })
+const getArtSubCategory = asyncHandler(async function (req,res){
+    res.status(200).json(await getArts(req.params.parentId));
+})
 
-module.exports = { getSubCategory, createSubCategory, patchSubCategory, deleteSubCategory }
+module.exports = { getSubCategory, createSubCategory, patchSubCategory, deleteSubCategory,getArtSubCategory }

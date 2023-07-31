@@ -1,4 +1,5 @@
-const { mongoose } = require('../config/database');
+
+const { db } = require('../config/database');
 
 const Content = require('../models/contentSchema');
 
@@ -7,12 +8,11 @@ const customError = require('../utils/customError');
 const contentCommit = require('../utils/contentCommit');
 const contentHistory = require('../utils/contentHistory');
 const prevContent = require('../utils/prevContent');
+const { sendUpdateNotification } = require('../utils/sendEmail');
 
 async function getService(parentId) {
   try {
-    if (!mongoose.Types.ObjectId.isValid(parentId)) {
-      throw new Error('Invalid parent_id format');
-    }
+    
 
     const content = await Content.findOne({ parentId });
 
@@ -50,7 +50,7 @@ async function patchService(body, contentId) {
 
     const updatedContent = await Content.findByIdAndUpdate(
       contentId,
-      { content: body.content,text: body.text},
+      { content: body.content, text: body.text},
       { new: true }
     );
     if (!updatedContent) {
@@ -58,9 +58,18 @@ async function patchService(body, contentId) {
     }
     else {
       contentCommit(contentId,body.content);
+
+      
+      const subscribers=await db('users').select('email').leftJoin('subscriber_info',function() {
+        this
+          .on('users.user_id', '=', 'subscriber_info.user_id')
+        }).where('articleId',updatedContent.parentId.toString())
+      const article=await Article.findById(updatedContent.parentId)
+      const arrayOfEmails = [...new Set(subscribers.map((obj) => obj.email))];
+      
+      sendUpdateNotification(arrayOfEmails,article.articleName,updatedContent.parentId.toString());
       return { message: 'Updated Successfully' };
     }
-
   } catch (err) {
     console.log(err)
     throw new customError('Something went wrong', 500)

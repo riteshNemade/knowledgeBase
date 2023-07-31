@@ -8,13 +8,20 @@ const contentInit=require('../utils/contentInit')
 
 async function getService(parent_id) {
     let result = await db
-        .select('articleId', 'articleName')
+        .select('articleId', 'articleName','creatorId')
         .from('article_relations')
         .where('parentId',parent_id)
         .catch(() => {
             throw new customError('No Articles Found.', 404);
         });
     
+    for(let i=0;i<result.length;i++){
+        let article= await db('article_editors')
+                    .select('user_id')
+                    .where('articleId',result[i].articleId)
+        
+        result[i].editors=article;
+    }
     return { "data": result };
 
 }

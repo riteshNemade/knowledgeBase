@@ -26,81 +26,84 @@ async function getService(articleId) {
 }
 
 async function createService(body, user_id) {
+    try {
+        console.log("hi")
+        let { articleName, parentId } = body;
+        let allow = [];
+        const temp = await Article.findById(parentId);
 
-    let { articleName, parentId } = body;
-    let allow = [];
-    const temp = await Article.findById(parentId);
-    console.log(temp)
-    allow.push(temp.createdBy);
-    const sqlList = await db('article_editors').select('user_id').where('articleId', parentId);
-    const newEditorIds = sqlList.map(entry => entry.user_id);
+        allow.push(temp.createdBy);
+        const sqlList = await db('article_editors').select('user_id').where('articleId', parentId);
+        const newEditorIds = sqlList.map(entry => entry.user_id);
 
-    const uniqueEditors = new Set(allow.concat(newEditorIds));
+        const uniqueEditors = new Set(allow.concat(newEditorIds));
 
-    // Convert back to array format
-    allow = Array.from(uniqueEditors);
-    const allowedUsers = allow.concat(sqlList.user_id);
-    console.log(allowedUsers);
-    let flag=false;
-    for(let i=0;i<allowedUsers.length;i++){
-        if(user_id===allowedUsers[i])
-        {
-            flag=true;
-            break;
+        // Convert back to array format
+        allow = Array.from(uniqueEditors);
+        const allowedUsers = allow.concat(sqlList.user_id);
+
+        let flag = false;
+        for (let i = 0; i < allowedUsers.length; i++) {
+            if (user_id === allowedUsers[i]) {
+                flag = true;
+                break;
+            }
         }
+        if (flag) {
+            const newArticle = new Article({
+                articleName,
+                createdBy: user_id,
+                parentId
+            })
+            await newArticle.save();
+            let articleId = newArticle._id.toString();
+
+            const newContent = new Content({
+                parentId: articleId,
+            });
+            await newContent.save();
+
+
+
+            contentInit(newContent._id.toString(), newContent.toString());
+
+            let childArticle = {
+                _id: newArticle._id,
+                articleName: newArticle.articleName,
+            }
+
+            const updatedArticle = await Article.findByIdAndUpdate(
+                parentId,
+                {
+                    $push: { childArticles: childArticle },
+                    hasChild: true
+                },
+                { new: true }
+            );
+
+            let grandId = updatedArticle.parentId;
+            console.log(grandId)
+            if (grandId) {
+                const grandArticle = await Article.findOne({ _id: grandId });
+                const childArticles = grandArticle.childArticles;
+                console.log(childArticles)
+                const childArticleToUpdate = childArticles.find(child => child._id == updatedArticle._id.toString());
+                console.log(childArticleToUpdate)
+                childArticleToUpdate.hasChild = true;
+                await grandArticle.save();
+            }
+
+            let result = {};
+
+            result.articleId = newArticle._id.toString();
+            result.contentId = newContent._id.toString();
+            return result;
+        } else {
+            throw new customError('Unauthorized access', 401)
+        }
+    } catch (err) {
+        console.log(err)
     }
-    if(flag){
-    const newArticle = new Article({
-        articleName,
-        createdBy: user_id,
-        parentId
-    })
-    await newArticle.save();
-    let articleId = newArticle._id.toString();
-
-    const newContent = new Content({
-        parentId: articleId,
-    });
-    await newContent.save();
-
-
-
-    contentInit(newContent._id.toString(), newContent.toString());
-
-    let childArticle = {
-        _id: newArticle._id,
-        articleName: newArticle.articleName,
-    }
-
-    const updatedArticle = await Article.findByIdAndUpdate(
-        parentId,
-        {
-            $push: { childArticles: childArticle },
-            hasChild: true
-        },
-        { new: true }
-    );
-
-    let grandId = updatedArticle.parentId;
-    console.log(grandId)
-    if (grandId) {
-        const grandArticle = await Article.findOne({ _id: grandId });
-        const childArticles = grandArticle.childArticles;
-        console.log(childArticles)
-        const childArticleToUpdate = childArticles.find(child => child._id == updatedArticle._id.toString());
-        console.log(childArticleToUpdate)
-        childArticleToUpdate.hasChild = true;
-        await grandArticle.save();
-    }
-
-    let result = {};
-
-    result.articleId = newArticle._id.toString();
-    result.contentId = newContent._id.toString();
-    return result;
-}else{
-    throw new customError('Unauthorized access',401)
-}
 
 }
 
@@ -134,10 +137,30 @@ async function deleteService(articleId) {
     if (!article) {
         return false;
     }
-    if (article.hasChild)
+    if (article.childArticles.length>0)
         throw new customError('Article has child articles. Delete them first.', 400);
     else {
+        const article = await Article.findById(articleId);
+        const parentArticle = await Article.findById(article.parentId);
+
+
+        // Find the index of the child article in the parent's childArticles array
+        const childArticleIndex = parentArticle.childArticles.findIndex(
+            (child) => child._id.toString() === article._id.toString()
+        );
+
+        // If the child article is found (index is not -1), remove it from the array
+        if (childArticleIndex !== -1) {
+            parentArticle.childArticles.splice(childArticleIndex, 1);
+            parentArticle.markModified('childArticles');
+            console.log(parentArticle)
+            await parentArticle.save();
+        }
+        parentArticle.hasChild = false;
+
+
         await Article.findByIdAndDelete(articleId);
+
         return true;
     }
 }
@@ -153,8 +176,8 @@ async function child(articleId) {
     }
 }
 
-async function getEditors(articleId,user_id){
-    const temp=await db('article_editors').select('')
+async function getEditors(articleId, user_id) {
+    const temp = await db('article_editors').select('*').where('articleId', articleId);
 }
 
 

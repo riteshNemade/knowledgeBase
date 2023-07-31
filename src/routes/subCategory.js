@@ -3,14 +3,16 @@ const {
     getSubCategory,
     createSubCategory,
     deleteSubCategory,
-    patchSubCategory
+    patchSubCategory,
+    getArtSubCategory
 }= require('../controllers/subCategoryController');
 
 
 const { authorize, allowIfLoggedin } = require('../middlewares/authHandler');
 const router = express.Router();
 
-router.route("/:parentId").get(allowIfLoggedin, authorize('readAny', 'sub'), getSubCategory);
+router.route("/:parentId").get(allowIfLoggedin, authorize('readAny', 'sub'), getSubCategory)
+router.route("/art/:parentId").get(allowIfLoggedin, authorize('readAny', 'sub'), getArtSubCategory)
 router
     .route("/")
     .post(allowIfLoggedin, authorize('createAny', 'sub'), createSubCategory)

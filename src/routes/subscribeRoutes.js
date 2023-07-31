@@ -1,7 +1,8 @@
 const express = require('express');
 const {
     subscribe,
-    unsubscribe
+    unsubscribe,
+    getSub
 }= require('../controllers/subscribeController');
 
 
@@ -11,7 +12,11 @@ const router = express.Router();
 router
     .route("/")
     .post(allowIfLoggedin, subscribe)
-    .post(allowIfLoggedin, unsubscribe)
+    .delete(allowIfLoggedin, unsubscribe)
+
+router
+    .route("/:articleId")
+    .get(allowIfLoggedin, getSub)
 
 
 

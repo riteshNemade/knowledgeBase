@@ -17,6 +17,7 @@ async function getService(id) {
 }
 
 
+
 async function createService(body, user_id) {
     const timestamp = new Date;
     let {categoryName,parentId}=body;
@@ -61,10 +62,35 @@ async function deleteService(id) {
    
 }
 
+async function getArts(id) {
+    let result = await db
+        .select('id', 'subCategoryName')
+        .from('sub_categories')
+        .where('parentId',id)
+        .catch(() => {
+            throw new customError('No Subcategories Found.', 404);
+        });
+
+        for (const subcategory of result) {
+            const articles = await db
+                .select('articleId', 'articleName')
+                .from('article_relations')
+                .where('parentId', subcategory.id);
+            
+            // Add the articles to the corresponding subcategory
+            subcategory.article = articles;
+        }
+    
+    return { "data": result };
+
+}
+
+
 
 module.exports = {
     createService,
     getService,
     patchService,
-    deleteService
+    deleteService,
+    getArts
 }
