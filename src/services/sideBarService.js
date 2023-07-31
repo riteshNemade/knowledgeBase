@@ -6,6 +6,7 @@ const { db } = require('../config/database')
 
 async function getService(articleId) {
     try {
+        if(articleId){
         const temp = await Article.findById(articleId);
         const content = await Content.findOne({ parentId: articleId })
         if (temp.hasChild)
@@ -19,6 +20,7 @@ async function getService(articleId) {
             };
         else
             return [];
+        }
     } catch (err) {
         console.log(err);
     }
