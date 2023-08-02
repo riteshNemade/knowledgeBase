@@ -9,6 +9,7 @@ const contentCommit = require('../utils/contentCommit');
 const contentHistory = require('../utils/contentHistory');
 const prevContent = require('../utils/prevContent');
 const { sendUpdateNotification } = require('../utils/sendEmail');
+const Clone = require('../models/cloneSchema');
 
 async function getService(parentId) {
   try {
@@ -53,12 +54,15 @@ async function patchService(body, contentId) {
       { content: body.content, text: body.text},
       { new: true }
     );
+    
     if (!updatedContent) {
       throw new customError('Content not found', 404);
     }
     else {
       contentCommit(contentId,body.content);
-
+      const clone= await Clone.findOne({parentId:contentId})
+      const savedClone= await Clone.findByIdAndUpdate(clone._id,{ content: body.content})
+      console.log("ASDSAD"+clone)
       
       const subscribers=await db('users').select('email').leftJoin('subscriber_info',function() {
         this

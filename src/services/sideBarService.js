@@ -9,7 +9,7 @@ async function getService(articleId) {
         if(articleId){
         const temp = await Article.findById(articleId);
         const content = await Content.findOne({ parentId: articleId })
-        if (temp.hasChild)
+        if (temp && temp.hasChild)
             return {
                 parentId: temp._id,
                 parentName: temp.articleName,
@@ -23,6 +23,7 @@ async function getService(articleId) {
         }
     } catch (err) {
         console.log(err);
+        throw new customError('Cannot get articles',500)
     }
 
 }
@@ -88,9 +89,9 @@ async function createService(body, user_id) {
             if (grandId) {
                 const grandArticle = await Article.findOne({ _id: grandId });
                 const childArticles = grandArticle.childArticles;
-                console.log(childArticles)
+                
                 const childArticleToUpdate = childArticles.find(child => child._id == updatedArticle._id.toString());
-                console.log(childArticleToUpdate)
+               
                 childArticleToUpdate.hasChild = true;
                 await grandArticle.save();
             }
@@ -150,17 +151,32 @@ async function deleteService(articleId) {
         const childArticleIndex = parentArticle.childArticles.findIndex(
             (child) => child._id.toString() === article._id.toString()
         );
-
+        
         // If the child article is found (index is not -1), remove it from the array
         if (childArticleIndex !== -1) {
-            parentArticle.childArticles.splice(childArticleIndex, 1);
+            const grandArticle= await Article.findById(parentArticle.parentId);
+            
+            const targetChildIndex = grandArticle.childArticles.findIndex(
+                (childArticle) => childArticle._id == parentArticle._id.toString()
+                );
+                
+                // If the target child article is found, update its hasChild property to false
+                if (targetChildIndex !== -1) {
+                    grandArticle.childArticles[targetChildIndex].hasChild = false;
+                }
+                
+                await grandArticle.save()
+                
+                
+                
+                parentArticle.childArticles.splice(childArticleIndex, 1);
+
             parentArticle.markModified('childArticles');
-            console.log(parentArticle)
+            
+            parentArticle.hasChild = false;
             await parentArticle.save();
         }
-        parentArticle.hasChild = false;
-
-
+        const aa=await Content.findOneAndDelete({parentId:articleId});
         await Article.findByIdAndDelete(articleId);
 
         return true;

@@ -5,9 +5,9 @@ const contentInit = require('../utils/contentInit');
 const customError = require('../utils/customError');
 const {db}=require('../config/database')
 
-async function getService(articleId) {
+async function getService(parentId) {
     try{
-        const temp= await Clone.findOne({parentId:articleId});
+        const temp= await Clone.findOne({parentId:parentId});
             return { 
                roomId:temp._id.toString(),
             };
@@ -20,9 +20,9 @@ async function getService(articleId) {
 
 async function createService(body) {
     
-    const existingClone= await Clone.find({parentId:body.parentId});
-    console.log(existingClone)
-    if(existingClone.length>0){
+    const existingClone= await Clone.findOne({parentId:body.parentId});
+    
+    if(existingClone){
     return existingClone;
     }
     else{

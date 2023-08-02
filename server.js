@@ -83,6 +83,7 @@ app.use("/clone", require("./src/routes/cloneRoutes"));
 app.use("/subscribe", require("./src/routes/subscribeRoutes"));
 app.use("/merge", require("./src/routes/mergeEditRoutes"));
 app.use("/invite", require("./src/routes/editorRoutes"));
+app.use("/search", require("./src/routes/searchRoutes"));
 
 app.use(errorHandler);              //defined last to catch errors
 

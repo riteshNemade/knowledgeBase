@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 
 const articleSchema = new mongoose.Schema({
+  Views:{
+    type:Number,
+    default:0,
+  },
   articleName: {
     type: String,
     required: true,

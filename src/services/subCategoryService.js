@@ -1,4 +1,5 @@
 const {db} = require('../config/database');
+const Article = require('../models/articleSchema');
 const customError = require('../utils/customError');
 const sendEmail = require('../utils/sendEmail');
 
@@ -84,6 +85,15 @@ async function getArts(id) {
     return { "data": result };
 
 }
+async function editors(id) {
+    let temp = await db('article_editors').select('user_id').where('articleId',id)
+    let result = temp.map(entry => entry.user_id);
+    const article= await Article.findById(id);
+    result.push(article.createdBy);
+    console.log(result);
+    return result;
+
+}
 
 
 
@@ -92,5 +102,6 @@ module.exports = {
     getService,
     patchService,
     deleteService,
-    getArts
+    getArts,
+    editors
 }

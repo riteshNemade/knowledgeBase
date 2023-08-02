@@ -107,12 +107,10 @@ async function deleteService(body) {
     return result;
 }
 
-async function inviteUsers(body){
-    const user_id=await db('users').select('user_id').where('email',body.email);
-    await db('article_editors').insert({
-        articleId:body.articleId,
-        user_id:user_id
-    })
+async function views(id){
+
+    const updatedArticle = await Article.findByIdAndUpdate(id, { $inc: { Views: 1 } }, { new: true });
+   console.log("view++")
 }
 
 
@@ -120,5 +118,6 @@ module.exports = {
     createService,
     getService,
     patchService,
-    deleteService
+    deleteService,
+    views
 }

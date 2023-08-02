@@ -5,11 +5,15 @@ const {
     getService,
     createService,
     patchService,
-    deleteService
+    deleteService,
+    views
 } = require('../services/articleService');
 
 const getArticle = asyncHandler(async function (req,res){
     res.status(201).json(await getService(req.params.parentId));
+})
+const incViews = asyncHandler(async function (req,res){
+    res.status(201).json(await views(req.params.parentId));
 })
 
 const createArticle = asyncHandler(async function (req, res) {
@@ -51,4 +55,4 @@ const deleteArticle = asyncHandler(async function (req, res) {
     });
 })
 
-module.exports = { getArticle, createArticle, patchArticle, deleteArticle }
+module.exports = { getArticle, createArticle, patchArticle, deleteArticle,incViews }

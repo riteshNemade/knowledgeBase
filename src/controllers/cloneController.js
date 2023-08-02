@@ -4,14 +4,16 @@ const customError = require('../utils/customError');
 const {
 
     createService,
+    getService
 
 } = require('../services/cloneService');
 
 
 const createClone = asyncHandler(async function (req,res){       
-    const id=await createService(req.body)              //Crud. THIS IS FOR SIDEBAR
+    const id=await createService(req.body)              
     res.status(201).json({id})
 })
+
 
 
 
