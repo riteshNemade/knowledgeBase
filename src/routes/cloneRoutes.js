@@ -4,8 +4,11 @@ const {
 }= require('../controllers/cloneController');
 
 
-const { authorize, allowIfLoggedin } = require('../middlewares/authHandler');
-const { create } = require('../models/contentSchema');
+const { 
+    allowIfLoggedin 
+} = require('../middlewares/authHandler');
+
+
 const router = express.Router();
 
 router.route("/").post(allowIfLoggedin, createClone );

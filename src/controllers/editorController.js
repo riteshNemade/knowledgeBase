@@ -3,8 +3,7 @@ const customError = require('../utils/customError');
 
 
 const {
-    createService,
-    getService
+    createService
 } = require('../services/editorService');
 
 
@@ -13,7 +12,7 @@ const createEditor = asyncHandler(async function (req, res) {
     let result = await createService(req.body, req.user.user_id);
 
     if (!result)
-        throw new customError('Cannot Add', 500)
+        throw new customError('Cannot Invite User.', 500)
     else {
         res.status(201).json({
             success: true,
@@ -25,4 +24,4 @@ const createEditor = asyncHandler(async function (req, res) {
 
 
 
-module.exports = { createEditor, }
+module.exports = { createEditor }

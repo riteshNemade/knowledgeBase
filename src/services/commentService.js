@@ -8,11 +8,8 @@ const customError = require('../utils/customError')
 
 async function getService(parentId) {
   try {
-    
-
-
     const comments = await Comment.find({ parentId });
-  
+
     if (!comments || comments.length === 0) {
       return null;
     }
@@ -26,23 +23,20 @@ async function getService(parentId) {
 }
 
 
-async function createService(body,user_id ) {
+async function createService(body, user_id) {
   try {
-    const name=await db('users').select('full_name').where('user_id',user_id);
+    const name = await db('users').select('full_name').where('user_id', user_id);
     console.log(name);
     const newComment = new Comment({
       comment: body.comment,
       parentId: body.parentId,
-      user_id:user_id,
-      name:name[0].full_name,
+      user_id: user_id,
+      name: name[0].full_name,
     });
     const savedComment = await newComment.save();
-
-
     return { data: savedComment };
   } catch (err) {
     console.log(err);
-    console.log(err)
     throw new customError('Something went wrong', 500)
   }
 }
@@ -59,8 +53,9 @@ async function patchService(body, commentId) {
       throw new customError('Content not found', 404);
     }
     else {
-      return { commentId:commentId,
-        comment:body.comment 
+      return {
+        commentId: commentId,
+        comment: body.comment
       };
     }
 
@@ -75,7 +70,7 @@ async function deleteService(commentId) {
     commentId
   );
   return true;
-  
+
 }
 
 

@@ -1,8 +1,11 @@
-const {db} = require('../config/database');
+const { db } = require('../config/database');
 const customError = require('../utils/customError');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { resetToken, generateToken } = require('../utils/generateToken');
+const { 
+    resetToken, 
+    generateToken 
+} = require('../utils/generateToken');
 const sendEmail = require('../utils/sendEmail');
 require('dotenv').config();
 
@@ -18,7 +21,7 @@ async function signUp(body) {
             if (result)
                 throw new customError('Username/email already registered. Please login instead.', 409);
         })
-    
+
     const timestamp = new Date;
     const hashedPassword = await bcrypt.hash(body.password, 10);
 
@@ -27,8 +30,8 @@ async function signUp(body) {
         username: body.username,
         email: body.email,
         password: hashedPassword,
-        role: body.role || "viewer",
-        department: body.department,     //assigned viewer by default.
+        role: body.role || "viewer",        //assigned viewer by default.
+        department: body.department,
         created_at: timestamp,
         updated_at: timestamp
     };
@@ -41,7 +44,7 @@ async function signUp(body) {
             .select('username', 'role', 'user_id', 'email', 'password')
             .where('username', body.username)
             .first();
-    
+
     if (user && (await bcrypt.compare(body.password, user.password))) {
         const accessToken = generateToken(user);
         return {
@@ -50,8 +53,8 @@ async function signUp(body) {
             "role": user.role,
             "token": accessToken
         }
-    }else{
-        throw new customError('There was an error. Contact System Administrator',500);
+    } else {
+        throw new customError('There was an error. Contact System Administrator', 500);
     }
 
 }
@@ -63,14 +66,14 @@ async function signIn(body) {
             .where('username', body.username)
             .first();
 
-    
+
     if (user && (await bcrypt.compare(body.password, user.password))) {
         const accessToken = generateToken(user);
         return {
             "name": user.username,
-            "user_id":user.user_id,
+            "user_id": user.user_id,
             "email": user.email,
-            "role" : user.role,
+            "role": user.role,
             "token": accessToken
         }
     } else {
@@ -96,7 +99,7 @@ async function forgotPwd(email) {
     const rToken = resetToken(email);   //reset tokens are valid for 15 minutes
     const resetUrl = `${process.env.BASE_URL}?token=${rToken}`;
 
-    const result=await db('reset_password').insert({
+    const result = await db('reset_password').insert({
         token: rToken,
         email: email,
         created_at: new Date(),

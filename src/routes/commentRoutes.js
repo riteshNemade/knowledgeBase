@@ -4,9 +4,7 @@ const {
     createComment,
     patchComment,
     deleteComment
-
 }= require('../controllers/commentController');
-
 
 const { authorize, allowIfLoggedin } = require('../middlewares/authHandler');
 const router = express.Router();
@@ -17,7 +15,5 @@ router
     .post(allowIfLoggedin, createComment)
     .delete(allowIfLoggedin, deleteComment)
     .patch(allowIfLoggedin, patchComment);
-
-
 
 module.exports=router;

@@ -1,17 +1,13 @@
 const asyncHandler = require('express-async-handler');
-const customError = require('../utils/customError');
 
 const {
-
-    createService,
-    getService
-
+    createService
 } = require('../services/cloneService');
 
 
-const createClone = asyncHandler(async function (req,res){       
-    const id=await createService(req.body)              
-    res.status(201).json({id})
+const createClone = asyncHandler(async function (req, res) {
+    const id = await createService(req.body)
+    res.status(201).json({ id })
 })
 
 

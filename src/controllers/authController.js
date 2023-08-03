@@ -1,6 +1,12 @@
 const asyncHandler = require("express-async-handler");
 const customError = require("../utils/customError");
-const { signUp, signIn, findByEmail, resetPwd, forgotPwd } = require("../services/authService");
+const { 
+    signUp, 
+    signIn, 
+    findByEmail, 
+    resetPwd, 
+    forgotPwd 
+} = require("../services/authService");
 
 /****************************************Sign Up************************************************************/
 const signUpController = asyncHandler(async function (req, res) {
@@ -37,9 +43,9 @@ const resetPwdController = asyncHandler(async function (req, res) {
     const token = req.params.validate;
     const confirmPassword = req.body.confirmPassword;
     const newPassword = req.body.newPassword;
-    if(newPassword!==confirmPassword)
-        return res.status(400).json({"message":"Passwords do not match."});
-    
+    if (newPassword !== confirmPassword)
+        return res.status(400).json({ "message": "Passwords do not match." });
+
     const result = await resetPwd(token, newPassword);
     res.status(200).json(result);
 })
