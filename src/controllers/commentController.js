@@ -22,7 +22,7 @@ const patchComment = asyncHandler(async function (req,res){                     
 const deleteComment = asyncHandler(async function (req,res){ 
     const flag=await deleteService(req.body.commentId)
     if(flag===true)                          //CRUD   
-        res.status(201).json({message:'Content Deleted.'});
+        res.status(201).json({message:'Comment Deleted.'});
     else
         res.status(500).json({message:'Something went wrong'});
 })

@@ -61,7 +61,9 @@ async function patchService(body, contentId) {
     else {
       contentCommit(contentId,body.content);
       const clone= await Clone.findOne({parentId:contentId})
+      if(clone){
       const savedClone= await Clone.findByIdAndUpdate(clone._id,{ content: body.content})
+      }
       console.log("ASDSAD"+clone)
       
       const subscribers=await db('users').select('email').leftJoin('subscriber_info',function() {

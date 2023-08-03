@@ -59,7 +59,9 @@ async function patchService(body, commentId) {
       throw new customError('Content not found', 404);
     }
     else {
-      return { message: 'Updated Successfully' };
+      return { commentId:commentId,
+        comment:body.comment 
+      };
     }
 
 

@@ -8,6 +8,7 @@ async function getService(articleId) {
     try {
         if(articleId){
         const temp = await Article.findById(articleId);
+        console.log(temp)
         const content = await Content.findOne({ parentId: articleId })
         if (temp && temp.hasChild)
             return {
@@ -16,10 +17,10 @@ async function getService(articleId) {
                 createdBy: temp.createdBy,
                 contentId: content._id,
                 childArticles: temp.childArticles,
-                allowedUsers: temp.allowedUsers
+                hasChild: true
             };
         else
-            return [];
+            return []
         }
     } catch (err) {
         console.log(err);
@@ -140,8 +141,11 @@ async function deleteService(articleId) {
     if (!article) {
         return false;
     }
-    if (article.childArticles.length>0)
+
+
+    if (article.hasChild){
         throw new customError('Article has child articles. Delete them first.', 400);
+    }
     else {
         const article = await Article.findById(articleId);
         const parentArticle = await Article.findById(article.parentId);
@@ -149,32 +153,38 @@ async function deleteService(articleId) {
 
         // Find the index of the child article in the parent's childArticles array
         const childArticleIndex = parentArticle.childArticles.findIndex(
-            (child) => child._id.toString() === article._id.toString()
+            (child) => child._id.toString() == article._id.toString()
         );
-        
+        console.log("child article index: "+childArticleIndex);
         // If the child article is found (index is not -1), remove it from the array
-        if (childArticleIndex !== -1) {
+        if (childArticleIndex !== -1) { 
+            if(parentArticle.parentId){
             const grandArticle= await Article.findById(parentArticle.parentId);
-            
             const targetChildIndex = grandArticle.childArticles.findIndex(
                 (childArticle) => childArticle._id == parentArticle._id.toString()
                 );
+           
+                parentArticle.childArticles.splice(childArticleIndex, 1);
                 
-                // If the target child article is found, update its hasChild property to false
-                if (targetChildIndex !== -1) {
+                parentArticle.markModified('childArticles');
+                if(parentArticle.childArticles && parentArticle.childArticles.length==0){
+                    parentArticle.hasChild = false;
+                }
+                if (targetChildIndex !== -1 && parentArticle.childArticles && parentArticle.childArticles.length==0) {
                     grandArticle.childArticles[targetChildIndex].hasChild = false;
                 }
-                
-                await grandArticle.save()
-                
-                
-                
-                parentArticle.childArticles.splice(childArticleIndex, 1);
-
-            parentArticle.markModified('childArticles');
-            
-            parentArticle.hasChild = false;
+                    await grandArticle.save()
             await parentArticle.save();
+            }else{
+                parentArticle.childArticles.splice(childArticleIndex, 1);
+                
+                parentArticle.markModified('childArticles');
+                if(parentArticle.childArticles && parentArticle.childArticles.length==0){
+                    parentArticle.hasChild = false;
+                }
+                await parentArticle.save();
+            }
+            
         }
         const aa=await Content.findOneAndDelete({parentId:articleId});
         await Article.findByIdAndDelete(articleId);
@@ -194,8 +204,12 @@ async function child(articleId) {
     }
 }
 
-async function getEditors(articleId, user_id) {
-    const temp = await db('article_editors').select('*').where('articleId', articleId);
+async function getNameService(articleId) {
+    const result=await Article.findById(articleId)
+    return {
+        articleName:result.articleName,
+        articleId:result._id
+    }
 }
 
 
@@ -204,5 +218,6 @@ module.exports = {
     getService,
     patchService,
     deleteService,
-    child
+    child,
+    getNameService
 }

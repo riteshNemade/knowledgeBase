@@ -84,30 +84,11 @@ app.use("/subscribe", require("./src/routes/subscribeRoutes"));
 app.use("/merge", require("./src/routes/mergeEditRoutes"));
 app.use("/invite", require("./src/routes/editorRoutes"));
 app.use("/search", require("./src/routes/searchRoutes"));
+app.use("/file/", require("./src/routes/imageUpload"));
 
 app.use(errorHandler);              //defined last to catch errors
 
-//search
-async function performTextSearch(searchQuery) {
-  try {
-    const results = await Content.find({ $text: { $search: searchQuery } });
-    return results;
-  } catch (err) {
-    console.error('Error performing text search:', err);
-    throw err;
-  }
-}
 
-// Example usage
-const searchTerm = '';
-performTextSearch(searchTerm)
-  .then((results) => {
-    console.log('Search results:', results);
-  })
-  .catch((err) => {
-    console.error('Error:', err);
-  });
-//
 
 
 

@@ -16,17 +16,13 @@ const dictionary = new Typo('en_US');
 async function search(query) {
     try {
         // Process the user query with NLP (tokenization and stemming)
-        const tokens = tokenizer.tokenize(query);
-        const stemmedTokens = tokens.map((token) => stemmer.stem(token));
-        const processedQuery = stemmedTokens.join(' ');
-        const spellCheckedTokens = processedQuery
-        .split(' ')
-        .map((token) => dictionary.check(token) ? token : dictionary.suggest(token))
-        .join(' ');
+        // const tokens = tokenizer.tokenize(query);
+        // const stemmedTokens = tokens.map((token) => stemmer.stem(token));
+        // const processedQuery = stemmedTokens.join(' ');
         
-        console.log(spellCheckedTokens)
+        // console.log(spellCheckedTokens)
 
-        const results = await Content.find({ $text: { $search: spellCheckedTokens } }); 
+        const results = await Content.find({ $text: { $search: query } }); 
         let arrayOfResults = []
         for (const result of results) {
             articleName = await Article.findById(result.parentId);

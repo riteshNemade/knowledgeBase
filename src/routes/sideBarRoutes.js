@@ -1,6 +1,6 @@
 const express = require('express');
 const {
-    getChildArticles, createChildArticle, deleteChildArticle, patchChildArticle, getChildren
+    getChildArticles, createChildArticle, deleteChildArticle, patchChildArticle, getChildren, getName
 }= require('../controllers/sideBarController');
 
 
@@ -9,6 +9,7 @@ const router = express.Router();
 
 router.route("/:articleId").get(allowIfLoggedin, authorize('readAny', 'infoPage'), getChildArticles);
 router.route("/child/:articleId").get(allowIfLoggedin, authorize('readAny', 'infoPage'), getChildren);
+router.route("/name/:articleId").get(allowIfLoggedin, authorize('readAny', 'infoPage'), getName);
 router
     .route("/")
     .post(allowIfLoggedin, authorize('createAny', 'infoPage'), createChildArticle)

@@ -4,7 +4,11 @@ const {
     createArticle,
     deleteArticle,
     patchArticle,
-    incViews
+    incViews,
+    incLikes,
+    getLikes,
+    decLikes,
+    getUserLike
 }= require('../controllers/articleController');
 
 
@@ -13,6 +17,11 @@ const router = express.Router();
 
 router.route("/:parentId").get(allowIfLoggedin, authorize('readAny', 'article'), getArticle);
 router.route("/views/:parentId").get(allowIfLoggedin, authorize('readAny', 'article'), incViews);
+
+router.route("/getLikes/:articleId").get(allowIfLoggedin, authorize('readAny', 'article'), getLikes);
+router.route("/getUserLike/:articleId").get(allowIfLoggedin, authorize('readAny', 'article'), getUserLike);
+router.route("/like/").post(allowIfLoggedin, authorize('readAny', 'article'), incLikes);
+router.route("/dislike/").post(allowIfLoggedin, authorize('readAny', 'article'), decLikes);
 router
     .route("/")
     .post(allowIfLoggedin, authorize('createAny', 'article'), createArticle)

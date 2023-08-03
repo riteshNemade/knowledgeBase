@@ -112,6 +112,56 @@ async function views(id){
     const updatedArticle = await Article.findByIdAndUpdate(id, { $inc: { Views: 1 } }, { new: true });
    console.log("view++")
 }
+async function likes(articleId,user_id){
+    const result= await db("article_likes").select('*').where('articleId',articleId).andWhere('user_id',user_id);
+    
+    if(result && result.length>0){
+        if(result[0].status==1)
+            throw new customError('Already Liked.',400);
+        else
+            await db('article_likes').update('status',1).where('articleId',articleId).andWhere('user_id',user_id);
+            return true;
+    }
+    else{
+        await db('article_likes').insert({
+            articleId: articleId,
+            user_id: user_id,
+            status: 1
+        })
+        return true;
+    }
+}
+async function dislike(articleId,user_id){
+    const result= await db("article_likes").select('*').where('articleId',articleId).andWhere('user_id',user_id);
+    
+    if(result && result.length>0){
+        if(result[0].status==0)
+            throw new customError('Already Disliked.',400);
+        else{
+            await db('article_likes').update('status',0).where('articleId',articleId).andWhere('user_id',user_id);
+            return true;
+        }
+    }
+    
+}
+async function getLikesService(articleId){
+    const result= await db("article_likes").count('* as likes').where('articleId',articleId).andWhere('status',1);
+    console.log(result);
+    if(result)
+        return result
+    else{
+        return 0;
+    }
+}
+async function getUserLikeService(articleId,user_id){
+    const result= await db("article_likes").select('*').where('articleId',articleId).andWhere('user_id',user_id).andWhere('status',1);
+    console.log(result);
+    if(result && result.length>0)
+        return true
+    else{
+        return false;
+    }
+}
 
 
 module.exports = {
@@ -119,5 +169,9 @@ module.exports = {
     getService,
     patchService,
     deleteService,
-    views
+    views,
+    likes,
+    dislike,
+    getLikesService,
+    getUserLikeService
 }

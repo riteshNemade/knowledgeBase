@@ -14,9 +14,9 @@ const router = express.Router();
 router.route("/:parentId").get(allowIfLoggedin, authorize('readAny', 'infoPage'), getComments);
 router
     .route("/")
-    .post(allowIfLoggedin, authorize('createAny', 'infoPage'), createComment)
-    .delete(allowIfLoggedin, authorize('deleteAny', 'infoPage'), deleteComment)
-    .patch(allowIfLoggedin, authorize('updateAny', 'infoPage'), patchComment);
+    .post(allowIfLoggedin, createComment)
+    .delete(allowIfLoggedin, deleteComment)
+    .patch(allowIfLoggedin, patchComment);
 
 
 

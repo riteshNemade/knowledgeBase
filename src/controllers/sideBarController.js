@@ -6,7 +6,8 @@ const {
     createService,
     patchService,
     deleteService,
-    child
+    child,
+    getNameService
 } = require('../services/sideBarService');
 
 
@@ -38,6 +39,9 @@ const getChildren=asyncHandler(async function (req,res){
     const result=await child(req.params.articleId);
     res.status(200).json({data:result})
 })
+const getName=asyncHandler(async function (req,res){
+    res.status(200).json(await getNameService(req.params.articleId))
+})
 
 
-module.exports = { getChildArticles, createChildArticle, patchChildArticle, deleteChildArticle,getChildren }
+module.exports = { getChildArticles, createChildArticle, patchChildArticle, deleteChildArticle,getChildren,getName }
