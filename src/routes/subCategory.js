@@ -6,7 +6,7 @@ const {
     patchSubCategory,
     getArtSubCategory,
     getEditors
-}= require('../controllers/subCategoryController');
+} = require('../controllers/subCategoryController');
 
 
 const { authorize, allowIfLoggedin } = require('../middlewares/authHandler');
@@ -23,4 +23,4 @@ router
 
 
 
-module.exports=router;
+module.exports = router;

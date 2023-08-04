@@ -1,9 +1,8 @@
 const {db} = require('../config/database');
 const Article = require('../models/articleSchema');
 const customError = require('../utils/customError');
-const sendEmail = require('../utils/sendEmail');
 
-
+/*********************CRUD**************************/
 async function getService(id) {
     let result = await db
         .select('id', 'subCategoryName')
@@ -16,8 +15,6 @@ async function getService(id) {
     return { "data": result };
 
 }
-
-
 
 async function createService(body, user_id) {
     const timestamp = new Date;
@@ -63,6 +60,7 @@ async function deleteService(id) {
    
 }
 
+/**********************************************************/
 async function getArts(id) {
     let result = await db
         .select('id', 'subCategoryName')

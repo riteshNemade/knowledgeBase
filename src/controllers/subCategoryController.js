@@ -10,12 +10,13 @@ const {
     editors
 } = require('../services/subCategoryService');
 
-const getSubCategory = asyncHandler(async function (req,res){
+/*************************CRUD*********************************/
+const getSubCategory = asyncHandler(async function (req, res) {
     res.status(200).json(await getService(req.params.parentId));
 })
 
 const createSubCategory = asyncHandler(async function (req, res) {
-    if (!req.body.categoryName||!req.user.user_id||!req.body.parentId)
+    if (!req.body.categoryName || !req.user.user_id || !req.body.parentId)
         throw new customError('Provide appropiate project details.', 400);
 
     let result = await createService(req.body, req.user.user_id);
@@ -26,8 +27,8 @@ const createSubCategory = asyncHandler(async function (req, res) {
         res.status(201).json({
             success: true,
             message: "Created successfully",
-            data:[{
-                "id":result
+            data: [{
+                "id": result
             }]
         });
     }
@@ -48,11 +49,15 @@ const deleteSubCategory = asyncHandler(async function (req, res) {
         data: null
     });
 })
-const getArtSubCategory = asyncHandler(async function (req,res){
+
+
+/******************************************************************/
+
+const getArtSubCategory = asyncHandler(async function (req, res) {
     res.status(200).json(await getArts(req.params.parentId));
 })
-const getEditors = asyncHandler(async function (req,res){
-    res.status(200).json({data: await editors(req.params.parentId)});
+const getEditors = asyncHandler(async function (req, res) {
+    res.status(200).json({ data: await editors(req.params.parentId) });
 })
 
-module.exports = { getSubCategory, createSubCategory, patchSubCategory, deleteSubCategory,getArtSubCategory,getEditors }
+module.exports = { getSubCategory, createSubCategory, patchSubCategory, deleteSubCategory, getArtSubCategory, getEditors }
